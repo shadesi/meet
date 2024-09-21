@@ -35,7 +35,7 @@ const CitySearch = ({ allLocations }) => {
         onChange={handleInputChanged}
       />
       {showSuggestions && suggestions.length > 0 ? (
-        <ul role="listbox" className="suggestions">
+        <ul role="list" className="suggestions">
           {suggestions.map((suggestion) => (
             <li onClick={handleItemClicked} key={suggestion}>
               {suggestion}
