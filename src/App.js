@@ -1,24 +1,24 @@
 // src/App.js
 
 import React, { useState, useEffect } from 'react';
-import CitySearch from './CitySearch';
-import NumberOfEvents from './NumberOfEvents';
-import EventList from './EventList';
+import CitySearch from './components/CitySearch';
+import NumberOfEvents from './components/NumberOfEvents';
+import EventList from './components/EventList';
 import { getEvents } from './api';
+import './App.css';
 
 const App = () => {
   const [currentCity, setCurrentCity] = useState(null);
-  const [currentNOE, setCurrentNOE] = useState(32); // Default to 32
+  const [currentNOE, setCurrentNOE] = useState(32);
   const [events, setEvents] = useState([]);
 
-  const fetchData = async () => {
-    const fetchedEvents = await getEvents(currentCity, currentNOE); // Adjust API call to accept currentNOE
-    setEvents(fetchedEvents);
-  };
-
   useEffect(() => {
+    const fetchData = async () => {
+      const fetchedEvents = await getEvents(currentCity, currentNOE);
+      setEvents(fetchedEvents);
+    };
     fetchData();
-  }, [currentCity, currentNOE]); // Add currentNOE to dependencies
+  }, [currentCity, currentNOE]);
 
   return (
     <div className="App">

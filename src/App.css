@@ -4,8 +4,8 @@
 
 .App {
   text-align: center;
-  padding: 2% 5%;
-  background-color: #add8e6; /* Light blue background */
+  padding: 2% 10%; /* Increased right padding for centering */
+  background-color: #87CEEB; /* Sky blue background */
 }
 
 .App * {
