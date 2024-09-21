@@ -1,20 +1,71 @@
+//src/api.js
+
 import mockData from "./mock-data";
 
-/**
- * Extract locations from the events data, removing duplicates.
- * @param {*} events - array of event objects
- * @returns Array of unique locations
- */
 export const extractLocations = (events) => {
   const extractedLocations = events.map((event) => event.location);
   const locations = [...new Set(extractedLocations)];
   return locations;
 };
 
-/**
- * Fetch the list of all events (mocked data)
- * @returns Promise resolving to the array of events
- */
+export const getAccessToken = async () => {
+  const accessToken = localStorage.getItem('access_token');
+  const tokenCheck = accessToken && (await checkToken(accessToken));
+
+  if (!accessToken || tokenCheck.error) {
+    await localStorage.removeItem("access_token");
+    const searchParams = new URLSearchParams(window.location.search);
+    const code = searchParams.get("code");
+
+    if (!code) {
+      const response = await fetch("YOUR_SERVERLESS_GET_AUTH_URL_ENDPOINT");
+      const result = await response.json();
+      const { authUrl } = result;
+      window.location.href = authUrl;
+    } else {
+      return await getToken(code);
+    }
+  }
+  return accessToken;
+};
+
+const checkToken = async (accessToken) => {
+  const response = await fetch(`https://www.googleapis.com/oauth2/v1/tokeninfo?access_token=${accessToken}`);
+  return await response.json();
+};
+
 export const getEvents = async () => {
-  return mockData;
+  if (window.location.href.startsWith("http://localhost")) {
+    return mockData;
+  }
+
+  const token = await getAccessToken();
+  if (token) {
+    removeQuery();
+    const url = `YOUR_GET_EVENTS_API_ENDPOINT/${token}`;
+    const response = await fetch(url);
+    const result = await response.json();
+    return result.events || null;
+  }
+};
+
+const removeQuery = () => {
+  let newurl;
+  if (window.history.pushState && window.location.pathname) {
+    newurl = `${window.location.protocol}//${window.location.host}${window.location.pathname}`;
+    window.history.pushState("", "", newurl);
+  } else {
+    newurl = `${window.location.protocol}//${window.location.host}`;
+    window.history.pushState("", "", newurl);
+  }
+};
+
+const getToken = async (code) => {
+  const encodeCode = encodeURIComponent(code);
+  const response = await fetch(`YOUR_GET_ACCESS_TOKEN_ENDPOINT/${encodeCode}`);
+  const { access_token } = await response.json();
+  if (access_token) {
+    localStorage.setItem("access_token", access_token);
+  }
+  return access_token;
 };

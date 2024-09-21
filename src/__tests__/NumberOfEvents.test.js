@@ -1,3 +1,5 @@
+//src/__tests__/NumberOfEvents.test.js
+
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import NumberOfEvents from '../components/NumberOfEvents';
@@ -15,7 +17,7 @@ describe('<NumberOfEvents /> component', () => {
     expect(input.value).toBe('32');
   });
 
-  test('input value changes when user types', async () => {
+  test('input value changes when user types', () => {
     const setCurrentNOE = jest.fn();
     const setErrorAlert = jest.fn();
     render(<NumberOfEvents setCurrentNOE={setCurrentNOE} setErrorAlert={setErrorAlert} />);
@@ -26,7 +28,7 @@ describe('<NumberOfEvents /> component', () => {
     expect(setErrorAlert).toHaveBeenCalledWith('');
   });
 
-  test('shows error if input value is not valid', async () => {
+  test('shows error if input value is not valid', () => {
     const setCurrentNOE = jest.fn();
     const setErrorAlert = jest.fn();
     render(<NumberOfEvents setCurrentNOE={setCurrentNOE} setErrorAlert={setErrorAlert} />);

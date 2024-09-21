@@ -1,4 +1,5 @@
 // src/components/NumberOfEvents.js
+
 import React, { useState } from 'react';
 
 function NumberOfEvents({ setCurrentNOE, setErrorAlert }) {
@@ -20,7 +21,7 @@ function NumberOfEvents({ setCurrentNOE, setErrorAlert }) {
       <label>
         Number of Events:
         <input
-          type="number" // Change type to number for spinbutton role
+          type="number"
           data-testid="numberOfEventsInput"
           value={numberOfEvents}
           onChange={handleInputChanged}
