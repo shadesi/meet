@@ -1,3 +1,6 @@
+// src/__tests__/Event.test.js
+
+import React from "react";
 import Event from "../components/Event";
 import userEvent from "@testing-library/user-event";
 import { render } from '@testing-library/react';

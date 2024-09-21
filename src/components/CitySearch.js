@@ -1,3 +1,5 @@
+// src/componenets/CitySearch.js
+
 import React, { useState } from "react";
 
 const CitySearch = ({ allLocations }) => {
@@ -33,7 +35,7 @@ const CitySearch = ({ allLocations }) => {
         onChange={handleInputChanged}
       />
       {showSuggestions && suggestions.length > 0 ? (
-        <ul className="suggestions">
+        <ul role="listbox" className="suggestions">
           {suggestions.map((suggestion) => (
             <li onClick={handleItemClicked} key={suggestion}>
               {suggestion}
