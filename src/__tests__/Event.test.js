@@ -13,6 +13,11 @@ describe('<Event /> component', () => {
     beforeEach(() => {
         EventComponent = render(<Event event={event}/>);
     });
+
+    // Mocking the getSelection function
+window.getSelection = () => ({
+  removeAllRanges: () => {},
+});
     
     test('renders event title', () => {
         const eventTitle = EventComponent.queryByText(event.summary);
