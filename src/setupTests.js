@@ -9,10 +9,11 @@ Object.defineProperty(window, 'getSelection', {
     addRange: () => {},
     toString: () => '', // Mock the toString method
     focusNode: null,
+    rangeCount: 0, // Add rangeCount to mimic real behavior
+    getRangeAt: () => ({}) // Add getRangeAt to prevent crashes in code that tries to use it
   }),
   writable: true,
 });
-
 
 // List of warning/error messages to intentionally prevent from appearing in the test output
 const MESSAGES_TO_IGNORE = [
