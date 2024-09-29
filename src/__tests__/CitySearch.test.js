@@ -1,9 +1,16 @@
 // src/__tests__/CitySearch.test.js
 
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import CitySearch from '../components/CitySearch';
 import userEvent from '@testing-library/user-event';
+
+// Mocking the getSelection function for jsdom
+Object.defineProperty(document, 'getSelection', {
+  value: () => ({
+    removeAllRanges: () => {},
+  }),
+});
 
 const allLocations = ['Berlin, Germany', 'Munich, Germany', 'Paris, France'];
 
@@ -17,9 +24,11 @@ describe('<CitySearch /> component', () => {
   });
 
   test('renders a list of suggestions when city textbox gains focus', async () => {
+    
     const user = userEvent.setup();
     await user.click(cityTextBox); // Focus on the textbox
-    const suggestionList = CitySearchComponent.getByRole('list'); // Changed to getByRole to ensure it throws an error if not found
+    
+    const suggestionList = CitySearchComponent.getByRole('list');
     expect(suggestionList).toBeInTheDocument();
     expect(suggestionList).toHaveClass('suggestions');
   });
@@ -33,7 +42,7 @@ describe('<CitySearch /> component', () => {
     );
 
     filteredSuggestions.forEach((suggestion) => {
-      expect(screen.getByText(suggestion)).toBeInTheDocument(); // Use getByText to ensure suggestion exists
+      expect(screen.getByText(suggestion)).toBeInTheDocument();
     });
   });
 
