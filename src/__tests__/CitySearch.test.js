@@ -16,6 +16,11 @@ describe('<CitySearch /> component', () => {
     cityTextBox = CitySearchComponent.getByRole('textbox');
   });
 
+  // Mocking the getSelection function
+window.getSelection = () => ({
+  removeAllRanges: () => {},
+});
+
   test('renders a list of suggestions when city textbox gains focus', async () => {
     const user = userEvent.setup();
     await user.click(cityTextBox); // Focus on the textbox
