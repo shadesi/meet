@@ -4,12 +4,14 @@ import '@testing-library/jest-dom';
 
 // Mock getSelection to prevent errors in tests
 Object.defineProperty(window, 'getSelection', {
-  value: () => ({
-    removeAllRanges: () => {},
-    addRange: () => {},
-    toString: () => '', // Mock the toString method
+  value: jest.fn(() => ({
+    removeAllRanges: jest.fn(),
+    addRange: jest.fn(),
+    toString: jest.fn(() => ''),
     focusNode: null,
-  }),
+    rangeCount: 0,
+    getRangeAt: jest.fn(() => ({}))
+  })),
   writable: true,
 });
 
