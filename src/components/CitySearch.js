@@ -1,53 +1,49 @@
-// src/componenets/CitySearch.js
+// src/__tests__/CitySearch.test.js
 
-import React, { useState } from "react";
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import CitySearch from '../components/CitySearch';
+import userEvent from '@testing-library/user-event';
 
-const CitySearch = ({ allLocations }) => {
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [query, setQuery] = useState("");
-  const [suggestions, setSuggestions] = useState([]);
+const allLocations = ['Berlin, Germany', 'Munich, Germany', 'Paris, France'];
 
-  const handleInputChanged = (event) => {
-    const value = event.target.value;
-    const filteredLocations = allLocations
-      ? allLocations.filter((location) => {
-          return location.toUpperCase().indexOf(value.toUpperCase()) > -1;
-        })
-      : [];
-    setQuery(value);
-    setSuggestions(filteredLocations);
-  };
+describe('<CitySearch /> component', () => {
+  let CitySearchComponent;
+  let cityTextBox;
 
-  const handleItemClicked = (event) => {
-    const value = event.target.textContent;
-    setQuery(value);
-    setShowSuggestions(false); // Hide the list after selection
-  };
+  beforeEach(() => {
+    CitySearchComponent = render(<CitySearch allLocations={allLocations} />);
+    cityTextBox = CitySearchComponent.getByRole('textbox');
+  });
 
-  return (
-    <div id="city-search">
-      <input
-        type="text"
-        className="city"
-        placeholder="Search for a city"
-        value={query}
-        onFocus={() => setShowSuggestions(true)}
-        onChange={handleInputChanged}
-      />
-      {showSuggestions && suggestions.length > 0 ? (
-        <ul role="listbox" className="suggestions">
-          {suggestions.map((suggestion) => (
-            <li onClick={handleItemClicked} key={suggestion}>
-              {suggestion}
-            </li>
-          ))}
-          <li key="See all cities" onClick={handleItemClicked}>
-            <b>See all cities</b>
-          </li>
-        </ul>
-      ) : null}
-    </div>
-  );
-};
+  test('renders a list of suggestions when city textbox gains focus', async () => {
+    const user = userEvent.setup();
+    await user.click(cityTextBox); // Focus on the textbox
+    const suggestionList = CitySearchComponent.container.querySelector('.suggestions'); // Query by class name if role is not defined
+    expect(suggestionList).toBeInTheDocument();
+    expect(suggestionList).toHaveClass('suggestions');
+  });
 
-export default CitySearch;
+  test('updates list of suggestions correctly when user types in city textbox', async () => {
+    const user = userEvent.setup();
+    await user.type(cityTextBox, 'Berlin'); // Typing 'Berlin'
+
+    const filteredSuggestions = allLocations.filter((location) =>
+      location.toUpperCase().includes('Berlin'.toUpperCase())
+    );
+
+    filteredSuggestions.forEach((suggestion) => {
+      expect(screen.getByText(suggestion)).toBeInTheDocument(); // Use getByText to ensure suggestion exists
+    });
+  });
+
+  test('renders the suggestion text in the textbox upon clicking on the suggestion', async () => {
+    const user = userEvent.setup();
+    await user.type(cityTextBox, 'Berlin'); // Typing 'Berlin'
+
+    const BerlinGermanySuggestion = CitySearchComponent.getAllByRole('listitem')[0];
+    await user.click(BerlinGermanySuggestion);
+
+    expect(cityTextBox.value).toBe('Berlin, Germany');
+  });
+});
