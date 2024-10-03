@@ -4,7 +4,7 @@ import App from '../App';
 import { getEvents } from '../mock-data';
 import userEvent from '@testing-library/user-event';
 
-const feature = loadFeature('./features/filterEventsByCity.feature');
+const feature = loadFeature('../features/filterEventsByCity.feature');
 
 defineFeature(feature, (test) => {
     // Scenario 1: When user hasn’t searched for a city, show upcoming events from all cities.
