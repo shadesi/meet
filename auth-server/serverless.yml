@@ -5,16 +5,18 @@ app: meetapp
 # "service" is the name of this project. This will also be added to your AWS resource names.
 service: auth-server
 
+plugins:
+  - serverless-dotenv-plugin
+
 provider:
   name: aws
   runtime: nodejs20.x
-  region: us-east-2
+  region: eu-central-1
   timeout: 30 # optional, in seconds
   environment:
-    CLIENT_ID: ${file(./config/config.json):CLIENT_ID}
-    CLIENT_SECRET: ${file(./config/config.json):CLIENT_SECRET}
-    CALENDAR_ID: ${file(./config/config.json):CALENDAR_ID}
-
+    CLIENT_ID: ${env:CLIENT_ID}
+    CLIENT_SECRET: ${env:CLIENT_SECRET}
+    CALENDAR_ID: ${env:CALENDAR_ID}
 
 functions:
   getAuthURL:
@@ -23,9 +25,20 @@ functions:
       - http:
           path: api/get-auth-url
           method: get
-  hello:
-    handler: handler.hello
+          cors: true
+
+  getAccessToken:
+    handler: handler.getAccessToken
     events:
       - http:
-          path: hello
+          path: api/get-access-token
           method: get
+          cors: true
+
+  getCalendarEvents:
+    handler: handler.getCalendarEvents
+    events:
+      - http:
+          path: api/get-events/{access_token}
+          method: get
+          cors: true
