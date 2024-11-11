@@ -17,12 +17,13 @@ const oAuth2Client = new google.auth.OAuth2(
 );
 
 module.exports.getAuthURL = async () => {
+  console.log('Generating auth URL...');
   const authUrl = oAuth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: SCOPES,
   });
 
-  console.log('Generated Auth URL:', authUrl);
+  console.log('Auth URL generated:', authUrl);
 
   return {
     statusCode: 200,
@@ -54,21 +55,19 @@ module.exports.getAccessToken = async (event) => {
         });
       }
       console.log('Token response:', response);
+      oAuth2Client.setCredentials(response.tokens);
       return resolve(response);
     });
   })
     .then((results) => {
-      console.log('Token results:', results);
-      oAuth2Client.setCredentials(results.tokens);
+      console.log('Access token obtained:', results);
       return {
         statusCode: 200,
         headers: {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Credentials': true,
         },
-        body: JSON.stringify({
-          access_token: results.tokens.access_token,
-        }),
+        body: JSON.stringify(results),
       };
     })
     .catch((error) => {
@@ -87,18 +86,6 @@ module.exports.getAccessToken = async (event) => {
 module.exports.getCalendarEvents = async (event) => {
   const access_token = decodeURIComponent(`${event.pathParameters.access_token}`);
   console.log('Received access token:', access_token);
-
-  if (!access_token) {
-    return {
-      statusCode: 400,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Credentials': true,
-      },
-      body: JSON.stringify({ error: 'Access token parameter is missing' }),
-    };
-  }
-
   oAuth2Client.setCredentials({ access_token });
 
   return new Promise((resolve, reject) => {
@@ -112,8 +99,8 @@ module.exports.getCalendarEvents = async (event) => {
       },
       (error, response) => {
         if (error) {
-          console.error('Error fetching events:', error);
-          reject({
+          console.error('Error fetching calendar events:', error);
+          return reject({
             statusCode: 500,
             headers: {
               'Access-Control-Allow-Origin': '*',
@@ -121,18 +108,32 @@ module.exports.getCalendarEvents = async (event) => {
             },
             body: JSON.stringify({ error: error.message }),
           });
-        } else {
-          console.log('Events response:', response);
-          resolve({
-            statusCode: 200,
-            headers: {
-              'Access-Control-Allow-Origin': '*',
-              'Access-Control-Allow-Credentials': true,
-            },
-            body: JSON.stringify({ events: response.data.items }),
-          });
         }
+        console.log('Calendar events fetched:', response);
+        return resolve(response);
       }
     );
-  });
+  })
+    .then((results) => {
+      console.log('Calendar events:', results.data.items);
+      return {
+        statusCode: 200,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Credentials': true,
+        },
+        body: JSON.stringify({ events: results.data.items }),
+      };
+    })
+    .catch((error) => {
+      console.error('Error in getCalendarEvents:', error);
+      return {
+        statusCode: 500,
+        headers: {
+          'Access-Control-Allow-Origin': '*',
+          'Access-Control-Allow-Credentials': true,
+        },
+        body: JSON.stringify({ error: error.message }),
+      };
+    });
 };
