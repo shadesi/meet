@@ -50,9 +50,6 @@ const Event = ({ event, forceCollapse, index }) => {
             <p>
               <strong>Organizer:</strong> {event.organizer.email}
             </p>
-            <Button variant="success" href={event.htmlLink} target="_blank">
-              See details on Google Calendar
-            </Button>
           </div>
         )}
         <Button
